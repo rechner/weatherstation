@@ -14,34 +14,41 @@
 
     <div class="container">
       <p>Where we add shit.</p>
+      <div id="time"></div>
     </div>
 
     <div class="weather_data">
     </div>
 
   <script>
-    var xhr = new XMLHTTPRequest();
     var wait_time = 10000;
     
-    xhr.open("GET", "weather.json", true);
-    xhr.onreadystatechange = function() {
-      // request is complete
-      if(xhr.readystate === 4) {
-        if(xhr.status === 200) {
-          update_weather_data()
+    function fetch_weather_data() {
+      var xhr = new XMLHttpRequest();
+      
+      xhr.open("GET", "/weather.json", true);
+      xhr.onreadystatechange = function() {
+        // request is complete
+        if(xhr.readyState === 4) {
+          if(xhr.status === 200) {
+            update_page(xhr.responseText);
+          }
+          else { window.clearInterval(timer_id) }
         }
-        else { window.clearInterval(timer_id) }
       }
+      xhr.send(null);
     }
     
-    timer_id = setInterval(function() {
-        xhr.send(null);
-    }, wait_time);
+    function update_page(json) {
+      var page_values = JSON.parse(json);
+      document.getElementById("time").innerHTML = page_values["time"];
+    }
+    
+    fetch_weather_data();
+    timer_id = window.setInterval(function() {
+        fetch_weather_data();
+      }, wait_time);
 
-  function update_weather_data(json) {
-    // TODO
-    // IMPLEMENT 
-  }
   </script>
   </body>
 </html>

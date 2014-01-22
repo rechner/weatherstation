@@ -4,6 +4,7 @@
 from flask import Flask
 import flask
 import config
+import time
 
 app = Flask(__name__)
 app.config.from_object("config.DevelopmentConfig")
@@ -29,5 +30,5 @@ def weather_json():
   return flask.jsonify(**weather_data)
 
 if __name__ == '__main__':
-  app.run()
+  app.run(host='0.0.0.0')
 
