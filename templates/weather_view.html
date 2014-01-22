@@ -16,7 +16,7 @@
       <div id="temperature"></div>
       <div id="relative_humidity"></div>
       <div id="wind_speed"></div>
-      <div id="wind_direction"></div>
+      <div><img src="{{ url_for('static', filename='wind.png') }}" id="wind_direction"></div>
       <div id="barometer"></div>
       <div id="rainfall"></div>
       <div id="barometer"></div>
@@ -55,13 +55,22 @@
         page_values["relative_humidity"];
       document.getElementById("wind_speed").innerHTML = 
         page_values["wind_speed"];
-      document.getElementById("wind_direction").innerHTML = 
-        page_values["wind_direction"];
+        
+      var wind_degrees = page_values["wind_direction"] * 360;
+      rotate_image("wind_direction", wind_degrees);
+        
       document.getElementById("barometer").innerHTML = 
         page_values["barometer"];
       document.getElementById("rainfall").innerHTML = 
         page_values["rainfall"];
     }
+    
+    function rotate_image(selector_id, degrees) {
+      document.getElementById(selector_id).style = 
+        "transform: rotate(" + degrees + "deg); " + 
+        "-webkit-transform:rotate(" + degrees + "deg);" +
+        "-ms-transform:rotate(" + degrees + "deg);";
+    } 
     
     fetch_weather_data();
     timer_id = window.setInterval(function() {
