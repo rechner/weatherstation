@@ -16,6 +16,33 @@
       <p>Where we add shit.</p>
     </div>
 
+    <div class="weather_data">
+    </div>
+
+  <script>
+    var xhr = new XMLHTTPRequest();
+    var wait_time = 10000;
+    
+    xhr.open("GET", "weather.json", true);
+    xhr.onreadystatechange = function() {
+      // request is complete
+      if(xhr.readystate === 4) {
+        if(xhr.status === 200) {
+          update_weather_data()
+        }
+        else { window.clearInterval(timer_id) }
+      }
+    }
+    
+    timer_id = setInterval(function() {
+        xhr.send(null);
+    }, wait_time);
+
+  function update_weather_data(json) {
+    // TODO
+    // IMPLEMENT 
+  }
+  </script>
   </body>
 </html>
 
