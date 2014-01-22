@@ -15,28 +15,28 @@
 
     <div class="container pure-g-r">
       <div class="pure-u-1-2">
-        <div id="temperature"></div>
+        <span id="temperature"></span>
       </div>
 
       <div class="pure-u-1-2">
-        <div id="relative_humidity"></div>
+        <span id="relative_humidity"></span>
       </div>
 
       <div class="pure-u-1-3">
-        <div id="wind_speed"></div>
-        <div><img src="{{ url_for('static', filename='wind.png') }}" id="wind_direction"></div>
+        <span id="wind_speed"></span>
+        <img src="{{ url_for('static', filename='wind.png') }}" id="wind_direction">
       </div>
 
       <div class="pure-u-1-3">  
-        <div id="barometer"></div>
+        <span id="barometer"></span>
       </div>
 
       <div class="pure-u-1-3">
-        <div id="rainfall"></div>
+        <span id="rainfall"></span>
       </div>
       
       <div class="pure-u-1">
-        <p>Last Updated: <div id="time"></div> </p>
+        <p>Last Updated: <span id="time"></span> </p>
       <div>
 
     </div>
