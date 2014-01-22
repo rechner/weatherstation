@@ -27,20 +27,20 @@
 
   <script>
     var wait_time = 10000;
+    var xhr = new XMLHttpRequest();
     
-    function fetch_weather_data() {
-      var xhr = new XMLHttpRequest();
-      
-      xhr.open("GET", "/weather.json", true);
-      xhr.onreadystatechange = function() {
-        // request is complete
-        if(xhr.readyState === 4) {
-          if(xhr.status === 200) {
-            update_page(xhr.responseText);
-          }
-          else { window.clearInterval(timer_id) }
+    xhr.onreadystatechange = function() {
+      // request is complete
+      if(xhr.readyState === 4) {
+        if(xhr.status === 200) {
+          update_page(xhr.responseText);
         }
+        else { window.clearInterval(timer_id) }
       }
+    }
+
+    function fetch_weather_data() {
+      xhr.open("GET", "/weather.json", true);
       xhr.send(null);
     }
     
@@ -73,9 +73,7 @@
     } 
     
     fetch_weather_data();
-    timer_id = window.setInterval(function() {
-        fetch_weather_data();
-      }, wait_time);
+    timer_id = window.setInterval(fetch_weather_data, wait_time);
 
   </script>
   </body>
