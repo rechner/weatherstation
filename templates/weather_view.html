@@ -2,6 +2,7 @@
 <html>
   <head>
     <title>Weather Viewer</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='pure-min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
   </head>
   <body>
@@ -12,17 +13,34 @@
       </div>
     </header>
 
-    <div class="container">
-      <div id="temperature"></div>
-      <div id="relative_humidity"></div>
-      <div id="wind_speed"></div>
-      <div><img src="{{ url_for('static', filename='wind.png') }}" id="wind_direction"></div>
-      <div id="barometer"></div>
-      <div id="rainfall"></div>
-      <div id="barometer"></div>
-      <p>Last Updated: <div id="time"></div>
+    <div class="container pure-g-r">
+      <div class="pure-u-1-2">
+        <div id="temperature"></div>
+      </div>
+
+      <div class="pure-u-1-2">
+        <div id="relative_humidity"></div>
+      </div>
+
+      <div class="pure-u-1-3">
+        <div id="wind_speed"></div>
+        <div><img src="{{ url_for('static', filename='wind.png') }}" id="wind_direction"></div>
+      </div>
+
+      <div class="pure-u-1-3">  
+        <div id="barometer"></div>
+      </div>
+
+      <div class="pure-u-1-3">
+        <div id="rainfall"></div>
+      </div>
+      
+      <div class="pure-u-1">
+        <p>Last Updated: <div id="time"></div> </p>
+      <div>
+
     </div>
-    
+ 
     
 
   <script>
