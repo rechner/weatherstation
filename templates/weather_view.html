@@ -4,8 +4,6 @@
     <title>Weather Viewer</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='pure-min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}">
-    <script src="{{ url_for('static', filename='jquery-1.10.2.min.js') }}"></script>
-    <script src="{{ url_for('static', filename='jQueryRotate.js') }}"></script>
   </head>
   <body>
 
@@ -50,7 +48,7 @@
     
 
   <script>
-    var wait_time = 10000;
+    var wait_time = 1000;
     var xhr = new XMLHttpRequest();
     
     xhr.onreadystatechange = function() {
@@ -81,8 +79,7 @@
         page_values["wind_speed"];
         
       var wind_degrees = page_values["wind_direction"] * 360;
-      $("#wind_direction").rotate(wind_degrees);
-      //$("#wind_speed").rotate(wind_degrees);
+      rotate_image("wind_direction", wind_degrees);
         
       document.getElementById("barometer").innerHTML = 
         page_values["barometer"];
