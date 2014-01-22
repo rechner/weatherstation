@@ -88,4 +88,22 @@ h3 {
 #wind_direction { 
   width: 100px;
   height: 100px;
+  background: url('/static/wind.png') 0 0 no-repeat;  
+  background-size: 100px 100px;
+}
+
+#wind_speed {
+  font-size: 17px;
+  text-align: center;
+  font-weight: bold;
+}
+
+.wind_speed {
+  position: relative;
+  display: block;
+  top: -68px;
+  left: 25px;
+  width: 50px;
+  text-align: center;
+  font-size: 12px;
 }

@@ -4,7 +4,7 @@
 from flask import Flask
 import flask
 import config
-import time
+import time, random
 
 app = Flask(__name__)
 app.config.from_object("config.DevelopmentConfig")
@@ -18,13 +18,13 @@ def weather_json():
   # STATIC DATA JUST FOR TESTING
   # This will eventually come from the daemon.
   weather_data = { 
-            'temperature' : -5.5,         # -5.5°C
-            'relative_humidity' : 85,     # 85%
-            'wind_speed' : 20,            # 20 km/h
-            'wind_direction' : 0.75,      # 270° (West)
-            'rainfall' : 2.4,             # 2.4 cm
-            'barometer' : 101.3,          # 101.3 kpa
-            'light' : 0.44,               # 44% intensity
+            'temperature' : -5.5,                  # -5.5°C
+            'relative_humidity' : 85,              # 85%
+            'wind_speed' : int(random.random() * 100),  # 20 km/h
+            'wind_direction' : random.random(),    # 270° (West)
+            'rainfall' : 2.4,                      # 2.4 cm
+            'barometer' : 101.3,                   # 101.3 kpa
+            'light' : 0.44,                        # 44% intensity
             'time' : time.time() 
     }        
   return flask.jsonify(**weather_data)
