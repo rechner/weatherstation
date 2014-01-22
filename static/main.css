@@ -85,3 +85,7 @@ h3 {
   text-decoration: none;
 }
 
+#wind_direction { 
+  width: 100px;
+  height: 100px;
+}
