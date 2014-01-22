@@ -85,15 +85,24 @@ h3 {
   text-decoration: none;
 }
 
+.weather-large {
+  font-size: 70px;
+}
+
+#temperature {
+  font-size: 180px;
+  font-weight: bold;
+}
+
 #wind_direction { 
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   background: url('/static/wind.png') 0 0 no-repeat;  
-  background-size: 100px 100px;
+  background-size: 150px 150px;
 }
 
 #wind_speed {
-  font-size: 17px;
+  font-size: 30px;
   text-align: center;
   font-weight: bold;
 }
@@ -101,9 +110,9 @@ h3 {
 .wind_speed {
   position: relative;
   display: block;
-  top: -68px;
-  left: 25px;
+  top: -102px;
+  left: 50px;
   width: 50px;
   text-align: center;
-  font-size: 12px;
+  font-size: 17px;
 }
