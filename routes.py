@@ -18,7 +18,7 @@ def weather_json():
   # STATIC DATA JUST FOR TESTING
   # This will eventually come from the daemon.
   weather_data = { 
-            'temperature' : -5.5,  # -5.5°C
+            'temperature' : -5.5,         # -5.5°C
             'relative_humidity' : 85,     # 85%
             'wind_speed' : 20,            # 20 km/h
             'wind_direction' : 0.75,      # 270° (West)

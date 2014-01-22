@@ -13,12 +13,17 @@
     </header>
 
     <div class="container">
-      <p>Where we add shit.</p>
-      <div id="time"></div>
+      <div id="temperature"></div>
+      <div id="relative_humidity"></div>
+      <div id="wind_speed"></div>
+      <div id="wind_direction"></div>
+      <div id="barometer"></div>
+      <div id="rainfall"></div>
+      <div id="barometer"></div>
+      <p>Last Updated: <div id="time"></div>
     </div>
-
-    <div class="weather_data">
-    </div>
+    
+    
 
   <script>
     var wait_time = 10000;
@@ -41,7 +46,21 @@
     
     function update_page(json) {
       var page_values = JSON.parse(json);
-      document.getElementById("time").innerHTML = page_values["time"];
+      var updated_time = new Date(page_values["time"]*1000);
+
+      document.getElementById("time").innerHTML = updated_time;
+      document.getElementById("temperature").innerHTML = 
+        page_values["temperature"];
+      document.getElementById("relative_humidity").innerHTML = 
+        page_values["relative_humidity"];
+      document.getElementById("wind_speed").innerHTML = 
+        page_values["wind_speed"];
+      document.getElementById("wind_direction").innerHTML = 
+        page_values["wind_direction"];
+      document.getElementById("barometer").innerHTML = 
+        page_values["barometer"];
+      document.getElementById("rainfall").innerHTML = 
+        page_values["rainfall"];
     }
     
     fetch_weather_data();
