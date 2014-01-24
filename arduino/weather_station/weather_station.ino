@@ -24,7 +24,7 @@ float getWindDirection() {
 }
 
 float getBarometer() {
-  return (random(1000) / 100.0);
+  return 101.3 - (random(1000) / 100.0);
 }
 
 boolean getRain() {
