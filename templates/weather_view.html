@@ -12,13 +12,18 @@
         <h1 class="logo">Weather Viewer</h1>
       </div>
     </header>
+    
+    <div id="error" class="alert alert-danger">
+      There was an error fetching the latest data.  Click 
+      <a onClick="reset_error();" href="#">here</a> to retry.
+    </div>
 
     <div class="container pure-g-r">
-      <div class="pure-u-1-2 weather-large">
+      <div class="pure-u-5-8 weather-large">
         <span id="temperature"></span>&deg; C
       </div>
 
-      <div class="pure-u-1-2">
+      <div class="pure-u-3-8">
         <span id="relative_humidity"></span>%
       </div>
 
@@ -49,15 +54,24 @@
 
   <script>
     var wait_time = 1000;
+    var fail_count = 0;
     var xhr = new XMLHttpRequest();
     
     xhr.onreadystatechange = function() {
       // request is complete
       if(xhr.readyState === 4) {
         if(xhr.status === 200) {
+          fail_count = 0; // reset fail count on success
           update_page(xhr.responseText);
+        } else { 
+          // after 4 failures, stop sending requests and display error
+          fail_count++;  
+          if(fail_count >= 4) {
+            window.clearInterval(timer_id) 
+            var errorDiv = document.getElementById("error");
+            errorDiv.style.display = "block";
+          }
         }
-        else { window.clearInterval(timer_id) }
       }
     }
 
@@ -85,6 +99,14 @@
         page_values["barometer"];
       document.getElementById("rainfall").innerHTML = 
         page_values["rainfall"];
+    }
+    
+    function reset_error(e) {
+      fail_count = 0;
+      fetch_weather_data();
+      timer_id = window.setInterval(fetch_weather_data, wait_time);
+      var errorDiv = document.getElementById("error");
+      errorDiv.style.display = "none";
     }
     
     function rotate_image(selector_id, degrees) {

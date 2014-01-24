@@ -1,10 +1,76 @@
 #!/usr/bin/env python
 #*-* coding: utf8 *-*
 
-from twisted.internet import defer, reactor
+import os
+import json
+import tornado.ioloop
+import tornado.web
+import serial
+
 import math
 
 PRECISION = 1 # Round to one decimal place for derivative calculations
+DEVICE = '/dev/ttyACM0'
+PORT = 8000
+
+ser = serial.Serial(DEVICE, baudrate=9600, timeout=0, writeTimeout=0)
+serialPending = ''
+
+#called whenever there is new input to check
+mostRecentLine = ''
+
+def checkSerial():
+  global serialPending
+  try:
+    serial_data = ser.read(ser.inWaiting())
+  except :
+    print("Error reading from %s " % serialPort )
+    return
+    
+  if len(serial_data) > 0:
+    serialPending += serial_data
+    parseSerial()
+    
+def parseSerial():
+  global mostRecentLine
+  global serialPending
+  packets = serialPending.split("\n")
+  if len(packets) > 1:
+    for line in packets[0:-1]:
+      print(line)
+      mostRecentLine = line      
+
+  pending = packets[-1]
+  serialPending = ''
+  
+# handle commands sent from the web browser
+class CommandHandler(tornado.web.RequestHandler):
+  #both GET and POST requests have the same responses
+  def get(self, url = '/'):
+    print "get"
+    self.handleRequest()
+      
+  #~ def post(self, url = '/'):
+    #~ print 'post'
+    #~ self.handleRequest()
+
+  # handle both GET and POST requests with the same function
+  def handleRequest( self ):
+    # is op to decide what kind of command is being sent
+    #~ op = self.get_argument('', None)
+    
+    #received a "checkup" operation command from the browser:
+    #~ if op == "checkup":
+    #make a dictionary
+    status = {"server": True, "mostRecentSerial" : json.loads(mostRecentLine) }
+    #turn it to JSON and send it to the browser
+    self.set_header("Content-Type", 'application/json; charset="utf8"')
+    self.write( json.dumps(status) )
+
+# adds event handlers for commands and file requests
+application = tornado.web.Application([(r"/(.*)", CommandHandler )])
+
+  
 
 """
 Convert farenheit to centigrade
@@ -79,5 +145,21 @@ def dew_point(temperature, humidity):
 def feels_like(temperature, humidity, windspeed):
   # Wind chill is defined for temperature < 14°C
   # Heat index calculated for temps > 26°C
-  # Not sure what to do with the interval between 14 and 26.
-  pass
+  # Otherwise neither will make a difference in perceived temperature:
+  if temperature <= 14:
+    return wind_chill(temperature, windspeed)
+  elif temperature >= 26:
+    return heat_index(temperature, humidity)
+  else:
+    return temperature
+
+if __name__ == "__main__":
+  #tell tornado to run checkSerial every 10ms
+  serial_loop = tornado.ioloop.PeriodicCallback(checkSerial, 200)
+  serial_loop.start()
+  
+  #start tornado
+  application.listen(PORT)
+  print("Starting server on port number %i..." % PORT )
+  print("Open at http://127.0.0.1:%i/index.html" % PORT )
+  tornado.ioloop.IOLoop.instance().start()

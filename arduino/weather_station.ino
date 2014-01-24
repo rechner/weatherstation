@@ -24,7 +24,7 @@ float getWindDirection() {
 }
 
 float getBarometer() {
-  return 101.3 - (random(1000) / 1000.0);
+  return (random(1000) / 100.0);
 }
 
 boolean getRain() {
@@ -36,19 +36,19 @@ float getLight() {
 }
 
 void loop() {
-  Serial.print("{ 'temperature' : ");
+  Serial.print("{ \"temperature\" : ");
   Serial.print(getTemperature());
-  Serial.print(", 'relative_humidity' : ");
+  Serial.print(", \"relative_humidity\" : ");
   Serial.print(getHumidity());
-  Serial.print(", 'wind_speed' : ");
+  Serial.print(", \"wind_speed\" : ");
   Serial.print(getWindSpeed());
-  Serial.print(", 'wind_direction' : ");
+  Serial.print(", \"wind_direction\" : ");
   Serial.print(getWindDirection());
-  Serial.print(", 'rain_sensor' : ");
+  Serial.print(", \"rain_sensor\" : ");
   Serial.print(getRain());
-  Serial.print(", 'barometer' : ");
+  Serial.print(", \"barometer\" : ");
   Serial.print(getBarometer());
-  Serial.print(", 'light' : ");
+  Serial.print(", \"light\" : ");
   Serial.print(getLight());
   Serial.print(" }\n");
   delay(1000);

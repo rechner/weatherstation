@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="744.09448819"
+   height="1052.3622047"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.3.1 r9886"
+   inkscape:export-filename="/home/redxine/Applications/weatherstation/static/wind.png"
+   inkscape:export-xdpi="360.29999"
+   inkscape:export-ydpi="360.29999"
+   sodipodi:docname="New document 1">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="2"
+     inkscape:cx="166.06375"
+     inkscape:cy="60.427584"
+     inkscape:document-units="px"
+     inkscape:current-layer="g3806"
+     showgrid="true"
+     inkscape:window-width="1680"
+     inkscape:window-height="991"
+     inkscape:window-x="0"
+     inkscape:window-y="27"
+     inkscape:window-maximized="1">
+    <inkscape:grid
+       type="xygrid"
+       id="grid3757" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <g
+       id="g3806"
+       transform="matrix(-0.99997735,-0.00673033,0.00673033,-0.99997735,93.252636,2005.0382)"
+       inkscape:export-filename="/home/redxine/Applications/weatherstation/static/wind.png"
+       inkscape:export-xdpi="90.07"
+       inkscape:export-ydpi="90.07">
+      <path
+         transform="matrix(0.98350447,0,0,1.0209001,-10.590901,941.06657)"
+         d="m 110.35714,60.040752 c 0,25.93766 -21.826115,46.964288 -48.749997,46.964288 -26.923881,0 -48.75,-21.026628 -48.75,-46.964288 0,-25.937659 21.826119,-46.964286 48.75,-46.964286 26.923882,0 48.749997,21.026627 48.749997,46.964286 z"
+         sodipodi:ry="46.964287"
+         sodipodi:rx="48.75"
+         sodipodi:cy="60.040752"
+         sodipodi:cx="61.607143"
+         id="path2985"
+         style="fill:none;stroke:#000000;stroke-width:4.09999990000000025;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-linejoin:round;stroke-linecap:round"
+         sodipodi:type="arc"
+         inkscape:export-xdpi="135.11"
+         inkscape:export-ydpi="135.11"
+         inkscape:export-filename="/home/redxine/Applications/weatherstation/static/wind.png" />
+      <path
+         sodipodi:nodetypes="ccc"
+         inkscape:connector-curvature="0"
+         id="path3761"
+         d="m 41,1049.3622 9,-27 10,27"
+         style="fill:#000000;fill-opacity:1;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+  </g>
+</svg>
