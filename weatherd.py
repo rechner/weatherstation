@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 #*-* coding: utf8 *-*
 
-import os
+import os, sys
 import json
 import tornado.ioloop
 import tornado.web
@@ -13,7 +13,29 @@ PRECISION = 1 # Round to one decimal place for derivative calculations
 DEVICE = '/dev/ttyACM0'
 PORT = 8000
 
-ser = serial.Serial(DEVICE, baudrate=9600, timeout=0, writeTimeout=0)
+# Human-readable translations:
+FROSTBITE_DANGER = BetweenDict(
+  { (-35, -26) : 'Danger of frostbite in 30 minutes',
+    (-35, -45) : 'Danger of frostbite in 10 minutes',
+    (-45, -sys.maxint) : 'Danger of frostbite in 5 minutes or less' })
+
+DEWPOINT = BetweenDict(
+  { (26, sys.maxint) : 'Severely high.  Fatal to Asthma-related illnesses',
+    (24, 26) : 'Extremely uncomfortable',
+    (21, 24) : 'Very uncomfortable',
+    (18, 21) : 'Somewhat uncomfortable',
+    (16, 18) : 'Mostly comfortable',
+    (13, 16) : 'Comfortable',
+    (10, 12) : 'Very comfortable',
+    (-sys.maxint, 10) : 'Dry' })
+    
+HEATSTROKE = BetweenDict(
+  { (27, 32) : 'Caution: Fatigue possible with prolonged activity',
+    (32, 41) : 'Extreme caution: Heat exhaustion or stroke possible.',
+    (41, 54) : 'Danger: Heat exhaustion likely. Danger of heat stroke',
+    (54, sys.maxint) : 'Extreme danger: Heat stroke is imminent' })
+  
+
 serialPending = ''
 
 #called whenever there is new input to check
@@ -70,8 +92,6 @@ class CommandHandler(tornado.web.RequestHandler):
 # adds event handlers for commands and file requests
 application = tornado.web.Application([(r"/(.*)", CommandHandler )])
 
-  
-
 """
 Convert farenheit to centigrade
 """
@@ -88,7 +108,7 @@ def c_to_f(temperature):
 Convert centigrade to kelvin
 """  
 def c_to_k(temperature):
-  return (temperature - 273.15)
+  return (temperature + 273.15)
   
 """
 Calculates wind chill in degrees Centigrade from a given dry bulb 
@@ -101,6 +121,7 @@ def wind_chill(temperature, windspeed):
     (windspeed ** 0.16)), PRECISION)
     
 def heat_index(temperature, humidity): 
+  # NOTE: Exposure to direct sunlight can increase heat index as much as 8°C
   temperature_f = c_to_f(temperature) #I couldn't find a purely metric formula
   # Magical weather numbers, or "Sometimes I think they're just guessing"
   c1 = -42.379
@@ -124,7 +145,7 @@ def humidex(temperature, humidity):
   #FIXME returns extremely large values
   dewpoint = c_to_k(dew_point(temperature, humidity)) #Dewpoint in Kelvin
   de = 5417.7530 * ((1 / 273.16) - (1 / dewpoint))
-  return round(temperature + (0.5555 * (6.11 * math.e ** (de))) - 10, PRECISION)
+  return round(temperature + (0.5555 * (6.11 * math.exp((de)))) - 10, PRECISION)
   
   
 def dew_point(temperature, humidity):
@@ -133,7 +154,8 @@ def dew_point(temperature, humidity):
   b = 17.67 # ? what is this I don't even
   c = 243.5 # °C
   
-  # Took this from a javascript thing: http://www.weathercast.co.uk/weather-calculator.html
+  # Took this from a javascript thing: 
+  #  http://www.weathercast.co.uk/weather-calculator.html
   # because converting formulas from wikipedia is hard.
   Es = a * pow(10.0, (7.5 * temperature / (c + temperature)));
   E  = (humidity * Es) / 100;
@@ -152,8 +174,43 @@ def feels_like(temperature, humidity, windspeed):
     return heat_index(temperature, humidity)
   else:
     return temperature
+    
+# A dictionary that uses range queries for keys.
+# http://joshuakugler.com/archives/30-BetweenDict,-a-Python-dict-for-value-ranges.html
+class BetweenDict(dict):
+  def __init__(self, d = {}):
+    for k,v in d.items():
+      self[k] = v
+
+  def __getitem__(self, key):
+    for k, v in self.items():
+      if k[0] <= key < k[1]:
+        return v
+    raise KeyError("Key '%s' is not between any values in the BetweenDict" % key)
+
+  def __setitem__(self, key, value):
+    try:
+      if len(key) == 2:
+        if key[0] < key[1]:
+          dict.__setitem__(self, (key[0], key[1]), value)
+        else:
+          raise RuntimeError('First element of a BetweenDict key must be '
+                              'strictly less than the second element')
+      else:
+        raise ValueError('Key of a BetweenDict must be an iterable '
+                          'with length two')
+    except TypeError:
+      raise TypeError('Key of a BetweenDict must be an iterable '
+                       'with length two')
+
+  def __contains__(self, key):
+    try:
+      return bool(self[key]) or True
+    except KeyError:
+      return False
 
 if __name__ == "__main__":
+  ser = serial.Serial(DEVICE, baudrate=9600, timeout=0, writeTimeout=0)
   #tell tornado to run checkSerial every 10ms
   serial_loop = tornado.ioloop.PeriodicCallback(checkSerial, 200)
   serial_loop.start()
