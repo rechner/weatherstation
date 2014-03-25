@@ -52,7 +52,8 @@ class BetweenDict(dict):
 FROSTBITE_DANGER = BetweenDict(
   { (-35, -26) : 'Danger of frostbite in 30 minutes',
     (-45, -35) : 'Danger of frostbite in 10 minutes',
-    (-sys.maxint, -45) : 'Danger of frostbite in 5 minutes or less' })
+    (-273.15, -45) : 'Danger of frostbite in 5 minutes or less',
+    (-sys.maxint, -273.15) : "PHYSICS BROKED, BURR!" })
 
 DEWPOINT = BetweenDict(
   { (26, sys.maxint) : 'Severely high.  Fatal to Asthma-related illnesses',
