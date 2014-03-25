@@ -17,7 +17,8 @@ PORT = 8000
 FROSTBITE_DANGER = BetweenDict(
   { (-35, -26) : 'Danger of frostbite in 30 minutes',
     (-35, -45) : 'Danger of frostbite in 10 minutes',
-    (-45, -sys.maxint) : 'Danger of frostbite in 5 minutes or less' })
+    (-45, -273.15) : 'Danger of frostbite in 5 minutes or less',
+    (-273.15, -sys.maxint) : "PHYSICS BROKED, BURR!" })
 
 DEWPOINT = BetweenDict(
   { (26, sys.maxint) : 'Severely high.  Fatal to Asthma-related illnesses',
