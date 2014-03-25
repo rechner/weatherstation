@@ -23,9 +23,12 @@
         <span id="temperature"></span>&deg; C
       </div>
 
-      <div class="pure-u-3-8">
-        <span id="relative_humidity"></span>%
+      <div class="pure-u-3-8 condition">
+        <img src="static/pixmaps/weather-clear.png" width="50%">
+        <div>Clear</div>
       </div>
+    </div>
+    <div class="container pure-g-r">
 
       <div class="pure-u-1-3">
         <div>
@@ -35,12 +38,19 @@
           </span> 
         </div>
       </div>
+      
+      <div class="pure-u-1-6">
+        <strong>RH:</strong>
+        <span id="relative_humidity"></span>%
+      </div>
 
-      <div class="pure-u-1-3">  
+      <div class="pure-u-1-6">  
+        <strong>Barometer:</strong><br>
         <span id="barometer"></span> kpa
       </div>
 
-      <div class="pure-u-1-3">
+      <div class="pure-u-1-6">
+        <strong>Daily Rainfall:</strong><br>
         <span id="rainfall"></span> cm
       </div>
       
@@ -91,6 +101,8 @@
         page_values["relative_humidity"];
       document.getElementById("wind_speed").innerHTML = 
         page_values["wind_speed"];
+      if (page_values["wind_speed"] === null)
+        document.getElementById("wind_speed").innerHTML = "-";
         
       var wind_degrees = page_values["wind_direction"] * 360;
       rotate_image("wind_direction", wind_degrees);

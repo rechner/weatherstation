@@ -118,6 +118,18 @@ h3 {
   font-size: 17px;
 }
 
+.condition {
+  text-align: center;
+  font-weight: bold;
+  font-size: 20px;
+}
+
+.condition > img {
+  display: block;
+  margin: 0 auto;
+  margin-bottom: 10px;
+}
+
 #error {
   display: none;
 }

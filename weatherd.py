@@ -6,18 +6,53 @@ import json
 import tornado.ioloop
 import tornado.web
 import serial
+from serial.serialutil import SerialException
 
 import math
 
 PRECISION = 1 # Round to one decimal place for derivative calculations
-DEVICE = '/dev/ttyACM0'
+DEVICE = '/dev/ttyUSB0'
 PORT = 8000
+
+# A dictionary that uses range queries for keys.
+# http://joshuakugler.com/archives/30-BetweenDict,-a-Python-dict-for-value-ranges.html
+class BetweenDict(dict):
+  def __init__(self, d = {}):
+    for k,v in d.items():
+      self[k] = v
+
+  def __getitem__(self, key):
+    for k, v in self.items():
+      if k[0] <= key < k[1]:
+        return v
+    raise KeyError("Key '%s' is not between any values in the BetweenDict" % key)
+
+  def __setitem__(self, key, value):
+    try:
+      if len(key) == 2:
+        if key[0] < key[1]:
+          dict.__setitem__(self, (key[0], key[1]), value)
+        else:
+          raise RuntimeError('First element of a BetweenDict key must be '
+                              'strictly less than the second element')
+      else:
+        raise ValueError('Key of a BetweenDict must be an iterable '
+                          'with length two')
+    except TypeError:
+      raise TypeError('Key of a BetweenDict must be an iterable '
+                       'with length two')
+
+  def __contains__(self, key):
+    try:
+      return bool(self[key]) or True
+    except KeyError:
+      return False
 
 # Human-readable translations:
 FROSTBITE_DANGER = BetweenDict(
   { (-35, -26) : 'Danger of frostbite in 30 minutes',
-    (-35, -45) : 'Danger of frostbite in 10 minutes',
-    (-45, -sys.maxint) : 'Danger of frostbite in 5 minutes or less' })
+    (-45, -35) : 'Danger of frostbite in 10 minutes',
+    (-sys.maxint, -45) : 'Danger of frostbite in 5 minutes or less' })
 
 DEWPOINT = BetweenDict(
   { (26, sys.maxint) : 'Severely high.  Fatal to Asthma-related illnesses',
@@ -49,8 +84,8 @@ def checkSerial():
     print("Error reading from %s " % serialPort )
     return
     
-  if len(serial_data) > 0:
-    serialPending += serial_data
+  serialPending += serial_data
+  if '\n' in serial_data:
     parseSerial()
     
 def parseSerial():
@@ -59,11 +94,12 @@ def parseSerial():
   packets = serialPending.split("\n")
   if len(packets) > 1:
     for line in packets[0:-1]:
-      print(line)
-      mostRecentLine = line      
+      # It turns out that javascript doesn't do NaN's:
+      mostRecentLine = line.replace('nan', 'null')
+      print mostRecentLine
 
-  pending = packets[-1]
-  serialPending = ''
+  serialPending = packets[-1]
+  #serialPending = ''
   
 # handle commands sent from the web browser
 class CommandHandler(tornado.web.RequestHandler):
@@ -84,7 +120,7 @@ class CommandHandler(tornado.web.RequestHandler):
     #received a "checkup" operation command from the browser:
     #~ if op == "checkup":
     #make a dictionary
-    status = {"server": True, "mostRecentSerial" : json.loads(mostRecentLine) }
+    status = {"server": True, "serial" : json.loads(mostRecentLine) }
     #turn it to JSON and send it to the browser
     self.set_header("Content-Type", 'application/json; charset="utf8"')
     self.write( json.dumps(status) )
@@ -175,42 +211,16 @@ def feels_like(temperature, humidity, windspeed):
   else:
     return temperature
     
-# A dictionary that uses range queries for keys.
-# http://joshuakugler.com/archives/30-BetweenDict,-a-Python-dict-for-value-ranges.html
-class BetweenDict(dict):
-  def __init__(self, d = {}):
-    for k,v in d.items():
-      self[k] = v
 
-  def __getitem__(self, key):
-    for k, v in self.items():
-      if k[0] <= key < k[1]:
-        return v
-    raise KeyError("Key '%s' is not between any values in the BetweenDict" % key)
-
-  def __setitem__(self, key, value):
-    try:
-      if len(key) == 2:
-        if key[0] < key[1]:
-          dict.__setitem__(self, (key[0], key[1]), value)
-        else:
-          raise RuntimeError('First element of a BetweenDict key must be '
-                              'strictly less than the second element')
-      else:
-        raise ValueError('Key of a BetweenDict must be an iterable '
-                          'with length two')
-    except TypeError:
-      raise TypeError('Key of a BetweenDict must be an iterable '
-                       'with length two')
-
-  def __contains__(self, key):
-    try:
-      return bool(self[key]) or True
-    except KeyError:
-      return False
 
 if __name__ == "__main__":
-  ser = serial.Serial(DEVICE, baudrate=9600, timeout=0, writeTimeout=0)
+  try:
+    ser = serial.Serial(DEVICE, baudrate=9600, timeout=0, writeTimeout=0)
+  except SerialException as e:
+    print e
+    print "Unable to start weatherd."
+    exit(127)
+  
   #tell tornado to run checkSerial every 10ms
   serial_loop = tornado.ioloop.PeriodicCallback(checkSerial, 200)
   serial_loop.start()
