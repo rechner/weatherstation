@@ -8,11 +8,13 @@ import tornado.web
 import serial
 from serial.serialutil import SerialException
 
+import sqlite3
 import math
 
 PRECISION = 1 # Round to one decimal place for derivative calculations
 DEVICE = '/dev/ttyUSB0'
 PORT = 8000
+DB_FILE = 'records.db'
 
 # A dictionary that uses range queries for keys.
 # http://joshuakugler.com/archives/30-BetweenDict,-a-Python-dict-for-value-ranges.html
@@ -95,9 +97,9 @@ def parseSerial():
   packets = serialPending.split("\n")
   if len(packets) > 1:
     for line in packets[0:-1]:
+      print "DEBUG: Decoded packet length {0} bytes".format(len(line))
       # It turns out that javascript doesn't do NaN's:
       mostRecentLine = line.replace('nan', 'null')
-      print mostRecentLine
 
   serialPending = packets[-1]
   #serialPending = ''
@@ -114,7 +116,7 @@ class CommandHandler(tornado.web.RequestHandler):
     #~ self.handleRequest()
 
   # handle both GET and POST requests with the same function
-  def handleRequest( self ):
+  def handleRequest(self):
     # is op to decide what kind of command is being sent
     #~ op = self.get_argument('', None)
     
@@ -212,7 +214,58 @@ def feels_like(temperature, humidity, windspeed):
   else:
     return temperature
     
-
+def init_db(db_conn):
+  db = db_conn.cursor()
+  db.execute("""CREATE TABLE IF NOT EXISTS daily_records(
+    `date` DATE PRIMARY KEY,
+    `high` REAL,
+    `low` REAL,
+    `wind_gust` REAL);""")
+  db.execute("""CREATE TABLE IF NOT EXISTS history(
+    `id` INTEGER PRIMARY KEY,
+    `timestamp` TIMESTAMP,
+    `temperature` REAL,
+    `humidity` REAL,
+    `wind_speed` REAL);""")
+  db_conn.commit()
+  
+def record_daily_highs(db_conn, high, low, wind_gust):
+  db = db_conn.cursor()
+  db.row_factory = sqlite3.Row
+  
+  db.execute("""SELECT * FROM daily_records WHERE date = DATE()""");
+  if len(db) == 0:
+    db.execute("""INSERT INTO daily_records(date, high, low, wind_gust)
+      VALUES
+        (DATE(), ?, ?, ?)""", (high, low, wind_gust))
+  
+  for row in db:
+    pass
+  
+  try:
+    db.execute("""""")
+  except sqlite3.IntegrityError:
+    db.execute(""" """)
+  finally:
+    db.commit()
+    
+def record_history(db_conn, temperature, humidity, wind_speed):
+  db = db_conn.cursor()
+  db.execute("""INSERT INTO `history`
+      (`timestamp`, `temperature`, `humidity`, `wind_speed`)
+    VALUES
+      (DATETIME(), ?, ?, ?);""", (temperature, humidity, wind_speed))
+  db_conn.commit()
+  
+def checkHistory():
+  #~ try:
+  data = json.loads(mostRecentLine)
+  record_history(db_conn, data['temperature'], data['relative_humidity'], data['wind_speed'])
+  print "DEBUG: Wrote history to database"
+  #~ except:
+    #~ print "Unable to record data"
+  #~ return
+  
 
 if __name__ == "__main__":
   try:
@@ -221,13 +274,20 @@ if __name__ == "__main__":
     print e
     print "Unable to start weatherd."
     exit(127)
-  
-  #tell tornado to run checkSerial every 10ms
+    
+  db_conn = sqlite3.connect(DB_FILE)
+  init_db(db_conn)
+    
+  #tell tornado to run checkSerial every 200ms
   serial_loop = tornado.ioloop.PeriodicCallback(checkSerial, 200)
   serial_loop.start()
+  
+  #record data every 30 seconds
+  record_loop = tornado.ioloop.PeriodicCallback(checkHistory, 3000)
+  record_loop.start()
   
   #start tornado
   application.listen(PORT)
   print("Starting server on port number %i..." % PORT )
-  print("Open at http://127.0.0.1:%i/index.html" % PORT )
+  print("Open at http://127.0.0.1:%i/" % PORT )
   tornado.ioloop.IOLoop.instance().start()
